@@ -1,7 +1,11 @@
 #include "app.hpp"
 #include "clock.hpp"
 
-App::App() {}
+App::App() 
+{
+	// init logging with spdlog
+	Log::init();
+}
 
 void App::run()
 {

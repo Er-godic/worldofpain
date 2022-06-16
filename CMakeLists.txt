@@ -6,6 +6,7 @@ project(worldofpain)
 
 #set paths
 set(src "${PROJECT_SOURCE_DIR}/src")
+set(thrd "${PROJECT_SOURCE_DIR}/thirdparty")
 
 #add source files
 file(GLOB_RECURSE source_files "${src}/*.cpp")
@@ -16,5 +17,11 @@ set(EXECUTABLE_OUTPUT_PATH "../bin/")
 #add the executable 
 add_executable(${PROJECT_NAME} ${source_files})
 
+# precompiled headers
+target_precompile_headers(${PROJECT_NAME} PRIVATE "$<$<COMPILE_LANGUAGE:CXX>:${src}/core/stdafx.hpp>")
+
 #include
-target_include_directories(${PROJECT_NAME} PUBLIC ${src})
+target_include_directories(${PROJECT_NAME} PUBLIC 
+	${src}
+	"${thrd}/spdlog/include"
+	)

@@ -14,26 +14,39 @@ private:
 	static std::shared_ptr<spdlog::logger> s_render;
 	static std::shared_ptr<spdlog::logger> s_physics;
 	
-public:
+public:	
+	enum Sys {core, physics, render };
+	enum Msg {info, warn, error, critical};
+	
 	static void init();
-	inline static std::shared_ptr<spdlog::logger>& coreLog() {return s_core;}
-	inline static std::shared_ptr<spdlog::logger>& renderLog() {return s_render;}
-	inline static std::shared_ptr<spdlog::logger>& physicsLog() {return s_physics;}
+
+	template<typename... Args>
+	static void print(Sys sys, Msg msg, Args &&... args)
+	{
+		spdlog::logger* logger = [sys]()
+		{
+			switch(sys)
+			{
+				case core    : return s_core.get();
+				case physics : return s_physics.get();
+				case render  : return s_physics.get();
+			}
+		}();
+
+		switch(msg)
+		{
+			case info : 
+				logger->info(std::forward<Args>(args)...); 
+				break;
+			case warn : 
+				logger->warn(std::forward<Args>(args)...); 
+				break;
+			case error : 
+				logger->error(std::forward<Args>(args)...); 
+				break;
+			case critical : 
+				logger->critical(std::forward<Args>(args)...); 
+				break;
+		}
+	}
 };
-
-// logging macros
-
-#define CORE_INFO(...)         Log::coreLog()->info(__VA_ARGS__)
-#define CORE_WARN(...)         Log::coreLog()->warn(__VA_ARGS__)
-#define CORE_ERROR(...)        Log::coreLog()->error(__VA_ARGS__)
-#define CORE_CRITICAL(...)     Log::coreLog()->critical(__VA_ARGS__)
-
-#define RENDER_INFO(...)       Log::renderLog()->info(__VA_ARGS__)
-#define RENDER_WARN(...)       Log::renderLog()->warn(__VA_ARGS__)
-#define RENDER_ERROR(...)      Log::renderLog()->error(__VA_ARGS__)
-#define RENDER_CRITICAL(...)   Log::renderLog()->critical(__VA_ARGS__)
-
-#define PHYSICS_INFO(...)      Log::physicsLog()->info(__VA_ARGS__)
-#define PHYSICS_WARN(...)      Log::physicsLog()->warn(__VA_ARGS__)
-#define PHYSICS_ERROR(...)     Log::physicsLog()->error(__VA_ARGS__)
-#define PHYSICS_CRITICAL(...)  Log::physicsLog()->critical(__VA_ARGS__)

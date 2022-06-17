@@ -14,5 +14,5 @@ void Log::init()
 	s_render->set_level(spdlog::level::trace);
 	s_physics->set_level(spdlog::level::trace);
 
-	CORE_INFO("Initialized logging");
+	print(core, info, "Initialized logging");
 }

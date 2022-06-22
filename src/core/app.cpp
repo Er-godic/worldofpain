@@ -1,5 +1,6 @@
 #include "app.hpp"
 #include "clock.hpp"
+#include "render/mesh.hpp"
 
 App::App() 
 {
@@ -10,7 +11,7 @@ App::App()
 	m_window = std::make_unique<Window>(1200, 750, "WOP");
 	Window::s_win = m_window.get();
 
-	// init shaders (use emplace rather than [] so that the deconstructor isn't called)
+	// init shaders (use emplace rather than [] so that the destructor isn't called)
 	for (auto& p : std::filesystem::directory_iterator("resources/shaders"))
 	{
 		std::string path = p.path().string();
@@ -18,6 +19,9 @@ App::App()
 		std::string name = path.substr(loc, path.rfind('.') - loc);
 		m_shaders.emplace(name, path.c_str());
 	}
+
+	// generate mesh format, use at() not []
+	Mesh::init(&m_shaders.at("mesh"));
 }
 
 void App::run()
@@ -29,8 +33,19 @@ void App::run()
 	Clock::seconds lag           = Clock::seconds(0);
 	Clock::seconds frametime     = Clock::seconds(1. / 60);
 	Clock::seconds max_frametime = Clock::seconds(250. / 1000); 	
-	clock.start();
+	
+	// temporary quad code
+	std::vector<Vertex> vertices(4);
+	vertices[0].pos = glm::vec3(0.5f,  0.5f, 0.0f);  
+        vertices[1].pos = glm::vec3(0.5f, -0.5f, 0.0f);  
+        vertices[2].pos = glm::vec3(-0.5f, -0.5f, 0.0f); 
+        vertices[3].pos = glm::vec3(-0.5f,  0.5f, 0.0f);
+	
+	std::vector<uint> indices = { 0, 1, 3, 1, 2, 3};
 
+	Mesh quad(vertices, indices);
+
+	clock.start();
 	while (m_window->isOpen())
 	{
 		dt = clock.tick();
@@ -48,12 +63,18 @@ void App::run()
 		
 		m_window->clear();
 		// TO DO render
+		// temporary quad code
+		Mesh::bind();
+                quad.render();
 		m_window->swapBuffers();
 	}
 }
 
 App::~App() 
 {
+	// delete mesh format
+	Mesh::dinit();
+
 	// dinit shaders
 	m_shaders.clear();
 }

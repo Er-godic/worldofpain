@@ -35,6 +35,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 	"${thrd}/spdlog/include"
 	"${glfw}/include"
         "${glad}/include"
+	"${thrd}/glm"
 	)
 
 #link

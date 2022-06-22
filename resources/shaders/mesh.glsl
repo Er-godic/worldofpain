@@ -2,6 +2,8 @@
 #version 460
 
 layout (location = 0) in vec3 pos;
+layout (location = 0) in vec3 normal;
+layout (location = 0) in vec3 tex;
 
 void main()
 {

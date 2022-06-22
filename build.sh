@@ -17,3 +17,6 @@ cp thirdparty/glfw/LICENSE.md bin/doc/glfw/LICENSE.md
 
 mkdir -p bin/doc/glad
 cp thirdparty/glad/LICENSE bin/doc/glad/LICENSE
+
+mkdir -p bin/doc/glm
+cp thirdparty/glm/copying.txt bin/doc/glm/copying.txt

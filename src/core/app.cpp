@@ -9,6 +9,15 @@ App::App()
 	// create window and store pointer
 	m_window = std::make_unique<Window>(1200, 750, "WOP");
 	Window::s_win = m_window.get();
+
+	// init shaders (use emplace rather than [] so that the deconstructor isn't called)
+	for (auto& p : std::filesystem::directory_iterator("resources/shaders"))
+	{
+		std::string path = p.path().string();
+		size_t loc = path.find_last_of("/") + 1;
+		std::string name = path.substr(loc, path.rfind('.') - loc);
+		m_shaders.emplace(name, path.c_str());
+	}
 }
 
 void App::run()
@@ -43,4 +52,8 @@ void App::run()
 	}
 }
 
-App::~App() {}
+App::~App() 
+{
+	// dinit shaders
+	m_shaders.clear();
+}

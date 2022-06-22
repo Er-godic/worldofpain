@@ -14,9 +14,6 @@
 
 using uint = unsigned int;
 
-template<typename Fnc>
-inline void loop(uint n, Fnc f) { for (uint i = 0; i < n; ++i) f(i); }
-
 // file operations
 static std::string parse(const std::string& path)
 {

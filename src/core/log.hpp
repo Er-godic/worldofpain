@@ -29,7 +29,7 @@ public:
 			{
 				case core    : return s_core.get();
 				case physics : return s_physics.get();
-				case render  : return s_physics.get();
+				case render  : return s_render.get();
 			}
 		}();
 

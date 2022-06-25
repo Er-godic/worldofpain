@@ -24,7 +24,7 @@ entt::entity Scene::create(const std::string& name)
 		auto& temp = view.get<Name>(entity).name;
 		if (name == temp)
 		{
-			const char* msg = "Duplicate name in addEntity()";
+			const char* msg = "Duplicate name in create()";
 			Log::print(Log::core, Log::error, msg);
 			return entt::null;
 		}
@@ -41,7 +41,7 @@ void Scene::destroy(const std::string& name)
 	entt::entity e = find(name);
 	if (e == entt::null)
 	{
-		const char* msg = "find() failure in removeEntity()";
+		const char* msg = "find() failure in destroy()";
 		Log::print(Log::core, Log::error, msg);
 	}
 	else m_scene.destroy(e);

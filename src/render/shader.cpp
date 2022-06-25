@@ -80,3 +80,28 @@ Shader::Shader(const char* path)
 Shader::~Shader() { glDeleteProgram(m_shader_program); }
 uint Shader::id() const { return m_shader_program; }
 void Shader::use() const { glUseProgram(m_shader_program); }
+
+int Shader::getloc (const std::string& name)
+{
+	// check for the location first in the uniformloc map
+	auto it = m_uniformloc.find(name);
+	if (it != m_uniformloc.end())
+		return it->second;
+
+	int loc = glGetUniformLocation(m_shader_program, name.c_str());
+	
+	// this is if the uniform doesn't exist
+	if (loc == -1)
+	{
+		const char* msg = "The uniform '{0}' is not valid, shader program id : {1}";
+		std::string shdr = std::to_string(m_shader_program);
+		Log::print(Log::render, Log::error, name, shdr);
+	}
+
+	// store location if it is not already stored
+	else m_uniformloc[name] = loc;
+
+	return loc;
+}
+
+void Shader::setUniform(const std::string& name, glm::mat4& mat4) { glUniformMatrix4fv(getloc(name), 1, GL_FALSE, &mat4[0][0]); }

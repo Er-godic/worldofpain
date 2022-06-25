@@ -2,7 +2,7 @@
 #include "glad/glad.h"
 
 uint Mesh::s_vao;
-const Shader* Mesh::s_shader;
+Shader* Mesh::s_shader;
 
 Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<uint>& indices)
 {
@@ -21,8 +21,10 @@ Mesh::~Mesh()
 	glDeleteBuffers(1, &m_ibo);
 }
 
-void Mesh::render()
+void Mesh::render(glm::mat4& world)
 {
+	s_shader->setUniform("W", world);
+
 	// draw indexed triangles
 	glVertexArrayVertexBuffer(s_vao, 0, m_vbo, 0, sizeof(Vertex));
 	glVertexArrayElementBuffer(s_vao, m_ibo);

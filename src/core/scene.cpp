@@ -1,5 +1,6 @@
 #include "scene.hpp"
 #include "render/mesh.hpp"
+#include "physics/transform.hpp"
 
 entt::entity Scene::find(const std::string& name)
 {
@@ -54,13 +55,15 @@ void Scene::interpolate(float L) {}
 void Scene::render()
 {
 	// render meshes
-	
-	Mesh::bind();
-
-	auto view = m_scene.view<Mesh*>();
-	for (auto entity : view)
-	{
-		Mesh* mesh  = view.get<Mesh*>(entity);
-		mesh->render();
+	{	
+		Mesh::bind();
+		auto view = m_scene.view<Mesh*, Transform>();
+		
+		for (auto entity : view)
+		{
+			const auto [mesh, transform] = view.get<Mesh*, Transform>(entity);
+			glm::mat4 world = transform.mat4();
+			mesh->render(world);
+		}
 	}
 }

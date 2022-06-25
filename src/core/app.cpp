@@ -1,6 +1,7 @@
 #include "app.hpp"
 #include "clock.hpp"
 #include "render/mesh.hpp"
+#include "physics/transform.hpp"
 
 App::App() 
 {
@@ -47,6 +48,14 @@ void App::run()
 
 	entt::entity e = m_scene.create("myquad");
 	m_scene.emplace<Mesh*>(e, &quad);
+
+	{
+		glm::vec3 s = glm::vec3(0.5f, 1.5f, 0.0f);
+		glm::vec3 z_axis = glm::vec3(0.0f, 0.0f, 1.0f);
+		glm::quat q = glm::angleAxis(glm::radians(20.0f), z_axis);
+		glm::vec3 t = glm::vec3(0.5f, 0.0f, 0.0f);
+		m_scene.emplace<Transform>(e, t, q, s);
+	}
 
 	clock.start();
 	while (m_window->isOpen())

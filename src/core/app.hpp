@@ -1,7 +1,7 @@
 #pragma once
+#include "scene.hpp"
 #include "window.hpp"
 #include "render/shader.hpp"
-#include "scene.hpp"
 
 class App
 {

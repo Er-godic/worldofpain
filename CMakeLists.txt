@@ -36,6 +36,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 	"${glfw}/include"
         "${glad}/include"
 	"${thrd}/glm"
+	"${thrd}/entt/single_include"
 	)
 
 #link

@@ -45,6 +45,9 @@ void App::run()
 
 	Mesh quad(vertices, indices);
 
+	entt::entity e = m_scene.create("myquad");
+	m_scene.emplace<Mesh*>(e, &quad);
+
 	clock.start();
 	while (m_window->isOpen())
 	{
@@ -55,17 +58,14 @@ void App::run()
 
 		for (lag += dt; lag >= frametime; lag -= frametime)
 		{
-			// TO DO update simulation/physics/logic each time step
+			m_scene.update(dt.count());
 		}
 
 		float L = lag.count() / frametime.count();
-		// TO DO interpolate game states
+		m_scene.interpolate(L);
 		
 		m_window->clear();
-		// TO DO render
-		// temporary quad code
-		Mesh::bind();
-                quad.render();
+		m_scene.render();
 		m_window->swapBuffers();
 	}
 }

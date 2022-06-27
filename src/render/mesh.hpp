@@ -2,6 +2,7 @@
 #include "core/stdafx.hpp"
 #include <glm/glm.hpp>
 #include "shader.hpp"
+#include "texture.hpp"
 
 struct Vertex
 { 
@@ -13,11 +14,12 @@ struct Vertex
 class Mesh
 {
 	uint m_vbo, m_ibo, m_num_indices;
+	std::vector<Texture> m_textures;
        	static uint s_vao;
 	static Shader* s_shader;
 
 public:
-	Mesh(const std::vector<Vertex>&, const std::vector<uint>&);
+	Mesh(const std::vector<Vertex>&, const std::vector<uint>&, const std::vector<Texture>&);
 	~Mesh();
         void render(glm::mat4&);
 

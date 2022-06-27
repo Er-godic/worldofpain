@@ -104,4 +104,5 @@ int Shader::getloc (const std::string& name)
 	return loc;
 }
 
+void Shader::setUniform(const std::string& name, int i)           { glUniform1i(getloc(name), i); }
 void Shader::setUniform(const std::string& name, glm::mat4& mat4) { glUniformMatrix4fv(getloc(name), 1, GL_FALSE, &mat4[0][0]); }

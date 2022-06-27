@@ -9,6 +9,9 @@
 #include <sstream>
 #include <filesystem>
 
+// include this before spdlog to prevent issues with stb
+#include <emmintrin.h>
+
 // logging
 #include "log.hpp"
 

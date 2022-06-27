@@ -2,6 +2,7 @@
 #include "clock.hpp"
 #include "render/mesh.hpp"
 #include "render/transform.hpp"
+#include "render/texture.hpp"
 
 App::App() 
 {
@@ -41,10 +42,18 @@ void App::run()
         vertices[1].pos = glm::vec3(0.5f, -0.5f, 0.0f);  
         vertices[2].pos = glm::vec3(-0.5f, -0.5f, 0.0f); 
         vertices[3].pos = glm::vec3(-0.5f,  0.5f, 0.0f);
-	
+
+	vertices[0].tex = glm::vec2(1.0f, 1.0f);
+	vertices[1].tex = glm::vec2(1.0f, 0.0f);
+	vertices[2].tex = glm::vec2(0.0f, 0.0f);
+	vertices[3].tex = glm::vec2(0.0f, 1.0f);
+
 	std::vector<uint> indices = { 0, 1, 3, 1, 2, 3};
 
-	Mesh quad(vertices, indices);
+	std::vector<Texture> textures;
+	textures.emplace_back("resources/textures/test.png", Texture::ambient);
+
+	Mesh quad(vertices, indices, textures);
 
 	entt::entity e = m_scene.create("myquad");
 	m_scene.emplace<Mesh*>(e, &quad);

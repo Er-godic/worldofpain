@@ -4,10 +4,9 @@
 uint Mesh::s_vao;
 Shader* Mesh::s_shader;
 
-Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<uint>& indices)
-{
-	m_num_indices = indices.size();
-
+Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<uint>& indices, 
+	const std::vector<Texture>& textures) : m_num_indices(indices.size()), m_textures(textures)
+{	
 	glCreateBuffers(1, &m_vbo);	
 	glNamedBufferStorage(m_vbo, sizeof(Vertex) * vertices.size(), &vertices[0], GL_DYNAMIC_STORAGE_BIT);
 
@@ -24,6 +23,9 @@ Mesh::~Mesh()
 void Mesh::render(glm::mat4& world)
 {
 	s_shader->setUniform("W", world);
+
+	for(uint i = 0; i < m_textures.size(); i++)
+		m_textures[i].render(i, s_shader);
 
 	// draw indexed triangles
 	glVertexArrayVertexBuffer(s_vao, 0, m_vbo, 0, sizeof(Vertex));

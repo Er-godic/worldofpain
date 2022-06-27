@@ -20,3 +20,9 @@ cp thirdparty/glad/LICENSE bin/doc/glad/LICENSE
 
 mkdir -p bin/doc/glm
 cp thirdparty/glm/copying.txt bin/doc/glm/copying.txt
+
+mkdir -p bin/doc/entt
+cp thirdparty/entt/LICENSE bin/doc/entt/LICENSE
+
+mkdir -p bin/doc/stb
+cp thirdparty/stb/LICENSE bin/doc/stb/LICENSE

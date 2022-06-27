@@ -15,4 +15,5 @@ public:
 
 	int getloc (const std::string& name);
 	void setUniform(const std::string& name, glm::mat4& mat4);
+	void setUniform(const std::string& name, int i);
 };

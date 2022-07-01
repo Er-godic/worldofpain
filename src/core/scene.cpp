@@ -1,4 +1,5 @@
 #include "scene.hpp"
+#include "render/strip.hpp"
 #include "render/mesh.hpp"
 #include "render/transform.hpp"
 
@@ -54,6 +55,19 @@ void Scene::interpolate(float L) {}
 
 void Scene::render()
 {
+	// render line strips
+	{	
+		Strip::bind();
+		auto view = m_scene.view<Strip*, Transform>();
+		
+		for (auto entity : view)
+		{
+			const auto [strip, transform] = view.get<Strip*, Transform>(entity);
+			glm::mat4 world = transform.mat4();
+			strip->render(world);
+		}
+	}
+
 	// render meshes
 	{	
 		Mesh::bind();

@@ -1,5 +1,6 @@
 #include "app.hpp"
 #include "clock.hpp"
+#include "render/strip.hpp"
 #include "render/mesh.hpp"
 #include "render/transform.hpp"
 #include "render/texture.hpp"
@@ -22,7 +23,8 @@ App::App()
 		m_shaders.emplace(name, path.c_str());
 	}
 
-	// generate mesh format, use at() not []
+	// generate formats, use at() not []
+	Strip::init(&m_shaders.at("color"));
 	Mesh::init(&m_shaders.at("mesh"));
 }
 
@@ -36,35 +38,25 @@ void App::run()
 	Clock::seconds frametime     = Clock::seconds(1. / 60);
 	Clock::seconds max_frametime = Clock::seconds(250. / 1000); 	
 	
-	// temporary quad code
-	std::vector<Vertex> vertices(4);
+	// temporary line strip code
+	std::vector<ColorVertex> vertices(4);
 	vertices[0].pos = glm::vec3(0.5f,  0.5f, 0.0f);  
-        vertices[1].pos = glm::vec3(0.5f, -0.5f, 0.0f);  
-        vertices[2].pos = glm::vec3(-0.5f, -0.5f, 0.0f); 
-        vertices[3].pos = glm::vec3(-0.5f,  0.5f, 0.0f);
+        vertices[1].pos = glm::vec3(0.5f, -0.7f, 0.0f);  
+        vertices[2].pos = glm::vec3(-0.5f, -0.2f, 0.0f); 
+        vertices[3].pos = glm::vec3(-0.6f,  0.5f, 0.0f);
 
-	vertices[0].tex = glm::vec2(1.0f, 1.0f);
-	vertices[1].tex = glm::vec2(1.0f, 0.0f);
-	vertices[2].tex = glm::vec2(0.0f, 0.0f);
-	vertices[3].tex = glm::vec2(0.0f, 1.0f);
+	vertices[0].color = glm::vec3(0.8f, 0.2f, 0.2f);
+	vertices[1].color = glm::vec3(0.6f, 0.2f, 0.4f);
+	vertices[2].color = glm::vec3(0.4f, 0.4f, 0.6f);
+	vertices[3].color = glm::vec3(0.2f, 0.6f, 0.4f);
+	
+	Strip strip(vertices);
 
-	std::vector<uint> indices = { 0, 1, 3, 1, 2, 3};
+	entt::entity e = m_scene.create("mylines");
+	m_scene.emplace<Strip*>(e, &strip);
 
-	std::vector<Texture> textures;
-	textures.emplace_back("resources/textures/test.png", Texture::ambient);
-
-	Mesh quad(vertices, indices, textures);
-
-	entt::entity e = m_scene.create("myquad");
-	m_scene.emplace<Mesh*>(e, &quad);
-
-	{
-		glm::vec3 s = glm::vec3(0.5f, 1.5f, 0.0f);
-		glm::vec3 z_axis = glm::vec3(0.0f, 0.0f, 1.0f);
-		glm::quat q = glm::angleAxis(glm::radians(20.0f), z_axis);
-		glm::vec3 t = glm::vec3(0.5f, 0.0f, 0.0f);
-		m_scene.emplace<Transform>(e, t, q, s);
-	}
+	Transform trans;
+	m_scene.emplace<Transform>(e, trans);
 
 	clock.start();
 	while (m_window->isOpen())
@@ -90,8 +82,9 @@ void App::run()
 
 App::~App() 
 {
-	// delete mesh format
+	// delete formats
 	Mesh::dinit();
+	Strip::dinit();
 
 	// dinit shaders
 	m_shaders.clear();

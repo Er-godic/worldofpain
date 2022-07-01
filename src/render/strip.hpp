@@ -2,18 +2,16 @@
 #include "core/stdafx.hpp"
 #include "vertex.hpp"
 #include "shader.hpp"
-#include "texture.hpp"
 
-class Mesh
+class Strip
 {
-	uint m_vbo, m_ibo, m_num_indices;
-	std::vector<Texture> m_textures;
+	uint m_vbo, m_num;
        	static uint s_vao;
 	static Shader* s_shader;
 
 public:
-	Mesh(const std::vector<MeshVertex>&, const std::vector<uint>&, const std::vector<Texture>&);
-	~Mesh();
+	Strip(const std::vector<ColorVertex>&);
+	~Strip();
         void render(glm::mat4&);
 
 	static void init(Shader*);

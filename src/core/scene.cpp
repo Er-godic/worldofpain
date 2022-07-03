@@ -1,7 +1,7 @@
 #include "scene.hpp"
 #include "render/strip.hpp"
+#include "render/colormesh.hpp"
 #include "render/mesh.hpp"
-#include "render/transform.hpp"
 
 entt::entity Scene::find(const std::string& name)
 {
@@ -54,30 +54,13 @@ void Scene::update(float dt) {}
 void Scene::interpolate(float L) {}
 
 void Scene::render()
-{
-	// render line strips
-	{	
-		Strip::bind();
-		auto view = m_scene.view<Strip*, Transform>();
-		
-		for (auto entity : view)
-		{
-			const auto [strip, transform] = view.get<Strip*, Transform>(entity);
-			glm::mat4 world = transform.mat4();
-			strip->render(world);
-		}
-	}
+{	
+	// color vertex
+	ColorVertex::bind();
+	renderIt<Strip*>();
+	renderIt<ColorMesh*>();
 
-	// render meshes
-	{	
-		Mesh::bind();
-		auto view = m_scene.view<Mesh*, Transform>();
-		
-		for (auto entity : view)
-		{
-			const auto [mesh, transform] = view.get<Mesh*, Transform>(entity);
-			glm::mat4 world = transform.mat4();
-			mesh->render(world);
-		}
-	}
+	// mesh vertex
+	MeshVertex::bind();
+	renderIt<Mesh*>();	
 }

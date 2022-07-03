@@ -1,5 +1,6 @@
 #pragma once
 #include <entt/entt.hpp>
+#include "render/transform.hpp"
 
 // component that gives an entity a name
 struct Name
@@ -26,5 +27,19 @@ public:
 
 	void update(float dt);
 	void interpolate(float L);
+
+	template <typename R>
+	void renderIt()
+        {
+                auto view = m_scene.view<R, Transform>();
+
+                for (auto entity : view)
+                {
+			const auto [transform, r] = view.template get<Transform, R>(entity);
+                        glm::mat4 world = transform.mat4();
+                        r->render(world);
+                }
+        };
+
 	void render();
 };

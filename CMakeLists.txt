@@ -38,8 +38,9 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 	"${thrd}/glm"
 	"${thrd}/entt/single_include"
 	"${thrd}/stb"
+	"${thrd}/lua"
 	)
 
 #link
-target_link_directories(${PROJECT_NAME} PRIVATE "${glfw}/src")
-target_link_libraries(${PROJECT_NAME} glfw)
+target_link_directories(${PROJECT_NAME} PRIVATE "${glfw}/src" "${thrd}/lua")
+target_link_libraries(${PROJECT_NAME} glfw lua)

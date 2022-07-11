@@ -1,54 +1,20 @@
 #include "scene.hpp"
+#include "lua.hpp"
 #include "render/strip.hpp"
 #include "render/colormesh.hpp"
 #include "render/mesh.hpp"
 
-Node::Node(const glm::vec3& t, const glm::quat& q, const glm::vec3& s)
-	: local(t, q, s) {}
-
-bool Node::addChild(entt::entity entity)
+void Scene::init()
 {
-	if (size == MAX_CHILDREN)
-	{
-		const char* msg = "Child limit exceeded in Node::addChild()";
-		Log::print(Log::core, Log::error, msg);
-		return false;
-	}
+	Lua script;
+	script.doFile("resources/scripts/test.lua");
 
-	children[size] = entity;
-	size += 1;
-	return true;
-}
-
-bool Node::removeChild(entt::entity entity)
-{
-	for (unsigned char i = 0; i < size; i++)
-	{
-		if (entity == children[i])
-		{
-			for (unsigned char j = i; j < size - 1; j++)
-				children[j] = children[j + 1];
-
-			children[size - 1] = entt::null;
-			size -= 1;
-			return true;
-		}
-	}
-
-	const char* msg = "Entity is not a child in Node::removeChild()";
-	Log::print(Log::core, Log::error, msg);
-	return false;
-}
-
-void Node::concatenate(entt::registry* registry, const Transform& parent)
-{
-	world = local * parent;
-	
-	for(unsigned char i = 0; i < size; i++) 
-	{
-		Node& child = registry->get<Node>(children[i]);
-		child.concatenate(registry, world);
-	}
+	auto* L = script();	
+	lua_getglobal(L, "a");
+	lua_getglobal(L, "b");
+	lua_getglobal(L, "c");
+	lua_getglobal(L, "d");
+	script.printStack();
 }
 
 entt::entity Scene::find(const std::string& name)
@@ -60,7 +26,7 @@ entt::entity Scene::find(const std::string& name)
 		if (name == temp) return entity;
 	}
 	
-	const char* msg = "Name not found in find()";
+	const char* msg = "Name not found in Scene::find()";
 	Log::print(Log::core, Log::error, msg);
 	return entt::null;
 }
@@ -74,7 +40,7 @@ entt::entity Scene::create(const std::string& name)
 		auto& temp = view.get<Name>(entity).name;
 		if (name == temp)
 		{
-			const char* msg = "Duplicate name in create()";
+			const char* msg = "Duplicate name in Scene::create()";
 			Log::print(Log::core, Log::error, msg);
 			return entt::null;
 		}
@@ -91,7 +57,7 @@ void Scene::destroy(const std::string& name)
 	entt::entity e = find(name);
 	if (e == entt::null)
 	{
-		const char* msg = "find() failure in destroy()";
+		const char* msg = "find() failure in Scene::destroy()";
 		Log::print(Log::core, Log::error, msg);
 	}
 	else m_scene.destroy(e);
@@ -105,7 +71,7 @@ void Scene::addNode(const entt::entity entity, const Node& node, const entt::ent
 		bool has_node = m_scene.all_of<Node>(parent);
 		if (!has_node)
 		{
-			const char* msg = "Parent in addNode() is not null and lacks node";
+			const char* msg = "Parent in Scene::addNode() is not null and lacks node";
 			Log::print(Log::core, Log::error, msg);
 			return;
 		}

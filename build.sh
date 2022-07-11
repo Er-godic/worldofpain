@@ -1,6 +1,13 @@
 #!/bin/sh
 
-cd build
+# build project
+
+# build lua first
+cd thirdparty/lua
+make
+
+# make
+cd ../../build
 make
 
 # move licenses into bin directory

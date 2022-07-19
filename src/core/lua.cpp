@@ -52,3 +52,9 @@ void Lua::printStack()
 	str = str + "\n";
 	Log::print(Log::core, Log::error, str);
 }
+
+void Lua::pushGlobalFnc(const char* name, lua_CFunction funct)
+{
+	lua_pushcfunction(m_L, funct);
+	lua_setglobal(m_L, name);
+}

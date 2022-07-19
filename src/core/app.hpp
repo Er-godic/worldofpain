@@ -5,8 +5,8 @@
 
 class App
 {
-	Scene m_scene;
 	std::unique_ptr<Window> m_window;
+	SceneManager m_scmanager;
 	std::unordered_map<std::string, Shader> m_shaders;
 public:
 	App();

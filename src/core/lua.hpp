@@ -19,5 +19,5 @@ public:
 	void printStack();
 
 	typedef int (*lua_CFunction) (lua_State* L);
-	//void pushCFunction(const char* name, lua_CFunction);
+	void pushGlobalFnc(const char*, lua_CFunction);
 };

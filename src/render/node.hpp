@@ -1,3 +1,4 @@
+#pragma once
 #include <entt/entt.hpp>
 #include "transform.hpp"
 
@@ -11,6 +12,7 @@ struct Node
         Transform local;
         Transform world;
 
+	Node() {}
         Node(const glm::vec3&, const glm::quat&, const glm::vec3&);
         bool addChild(entt::entity);
         bool removeChild(entt::entity);

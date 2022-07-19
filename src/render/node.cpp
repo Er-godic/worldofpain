@@ -1,7 +1,7 @@
 #include "node.hpp"
 
-Node::Node(const glm::vec3& t, const glm::quat& q, const glm::vec3& s)
-        : local(t, q, s) {}
+Node::Node(const glm::vec3& s, const glm::quat& q, const glm::vec3& t)
+        : local(s, q, t) {}
 
 bool Node::addChild(entt::entity entity)
 {

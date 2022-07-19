@@ -1,105 +1,107 @@
 #include "scene.hpp"
-#include "lua.hpp"
-#include "render/strip.hpp"
-#include "render/colormesh.hpp"
-#include "render/mesh.hpp"
+#include "luascene.hpp"
 
-void Scene::init()
+SceneManager* SceneManager::s_scmanager;
+
+void SceneManager::init()
 {
-	Lua script;
-	script.doFile("resources/scripts/test.lua");
-
-	auto* L = script();	
-	lua_getglobal(L, "a");
-	lua_getglobal(L, "b");
-	lua_getglobal(L, "c");
-	lua_getglobal(L, "d");
-	script.printStack();
+	m_lua.pushGlobalFnc("Entity", entity);
+	m_lua.pushGlobalFnc("Vec3", vec3);
+	m_lua.pushGlobalFnc("Quat", quat);
+	m_lua.pushGlobalFnc("Node", node);
+	m_lua.pushGlobalFnc("addNode", ::addNode);
+	
+	m_lua.doFile("resources/scripts/scmanager.lua");
 }
 
-entt::entity Scene::find(const std::string& name)
+SceneManager::~SceneManager()
 {
-	auto view = m_scene.view<Name>();
+	m_reg.clear();
+}
+
+entt::entity SceneManager::find(const std::string& name)
+{
+	auto view = m_reg.view<Name>();
 	for (auto entity : view)
 	{
 		std::string& temp  = view.get<Name>(entity).name;
 		if (name == temp) return entity;
 	}
 	
-	const char* msg = "Name not found in Scene::find()";
+	const char* msg = "Name not found in SceneManager::find()";
 	Log::print(Log::core, Log::error, msg);
 	return entt::null;
 }
 
-entt::entity Scene::create(const std::string& name)
+entt::entity SceneManager::create(const std::string& name)
 {
 	// make sure the label is unique
-	auto view = m_scene.view<Name>();
+	auto view = m_reg.view<Name>();
 	for (auto entity : view)
 	{
 		auto& temp = view.get<Name>(entity).name;
 		if (name == temp)
 		{
-			const char* msg = "Duplicate name in Scene::create()";
+			const char* msg = "Duplicate name in SceneManager::create()";
 			Log::print(Log::core, Log::error, msg);
 			return entt::null;
 		}
 	}	
 
 	// make entity
-	auto entity = m_scene.create();
-	m_scene.emplace<Name>(entity, name);
+	auto entity = m_reg.create();
+	m_reg.emplace<Name>(entity, name);
 	return entity;
 }
 
-void Scene::destroy(const std::string& name)
+void SceneManager::destroy(const std::string& name)
 {
 	entt::entity e = find(name);
 	if (e == entt::null)
 	{
-		const char* msg = "find() failure in Scene::destroy()";
+		const char* msg = "find() failure in SceneManager::destroy()";
 		Log::print(Log::core, Log::error, msg);
 	}
-	else m_scene.destroy(e);
+	else m_reg.destroy(e);
 }
 
-void Scene::addNode(const entt::entity entity, const Node& node, const entt::entity parent)
+void SceneManager::addNode(const entt::entity entity, const Node& node, const entt::entity parent)
 {
 	if (parent != entt::null)
 	{
 		// check if parent has node component
-		bool has_node = m_scene.all_of<Node>(parent);
+		bool has_node = m_reg.all_of<Node>(parent);
 		if (!has_node)
 		{
-			const char* msg = "Parent in Scene::addNode() is not null and lacks node";
+			const char* msg = "Parent in SceneManager::addNode() is not null and lacks node";
 			Log::print(Log::core, Log::error, msg);
 			return;
 		}
 		
 		// add node as child to parent
-		Node& parent_node = m_scene.get<Node>(parent);
+		Node& parent_node = m_reg.get<Node>(parent);
 		if(!parent_node.addChild(entity)) return;
 		
 		// node not root, add parent component to entity
-		m_scene.emplace<Parent>(entity, parent);
+		m_reg.emplace<Parent>(entity, parent);
 	}
 
-	m_scene.emplace<Node>(entity, node);
+	m_reg.emplace<Node>(entity, node);
 }
 
-void Scene::update(float dt) {}
+void SceneManager::update(float dt) {}
 
-void Scene::interpolate(float L) {}
+void SceneManager::interpolate(float L) {}
 
-void Scene::render()
+void SceneManager::render()
 {	
 	// concatenate up each tree from the root
-	auto group = m_scene.group<Node>({}, entt::exclude<Parent>);
+	auto group = m_reg.group<Node>({}, entt::exclude<Parent>);
 	for (auto entity : group)
 	{
 		Node& node = group.get<Node>(entity);
 		Transform identity;
-		node.concatenate(&m_scene, identity);
+		node.concatenate(&m_reg, identity);
 	}
 
 	// color vertex
